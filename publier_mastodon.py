@@ -8,6 +8,7 @@ Options :
   --instance mastodon.social   serveur de votre compte (par défaut mastodon.social)
   --image fichier.png          joindre une image (png, jpg, gif, webp)
   --alt "texte"                description de l'image pour les personnes aveugles
+  --repondre <lien du message> publier en réponse à un message (pour faire un fil)
   --oui                        publier sans demander de confirmation
 
 Le jeton d'accès est lu dans la variable MASTODON_TOKEN, sinon le script le demande
@@ -81,7 +82,7 @@ def envoyer_image(instance, jeton, chemin, alt):
 
 
 def main(args):
-    instance, image, alt, oui = "mastodon.social", None, None, False
+    instance, image, alt, oui, repondre = "mastodon.social", None, None, False, None
     reste = []
     i = 0
     while i < len(args):
@@ -91,6 +92,11 @@ def main(args):
             image, i = args[i + 1], i + 2
         elif args[i] == "--alt":
             alt, i = args[i + 1], i + 2
+        elif args[i] == "--repondre":
+            # On garde seulement le numéro à la fin du lien
+            repondre, i = args[i + 1].rstrip("/").split("/")[-1], i + 2
+            if not repondre.isdigit():
+                sys.exit("❌ --repondre attend le lien d'un message, ex. https://mastodon.social/@moi/123456")
         elif args[i] == "--oui":
             oui, i = True, i + 1
         else:
@@ -111,6 +117,8 @@ def main(args):
         sys.exit(f"❌ Image introuvable : {image}")
 
     print(f"— Message ({taille} caractères pour Mastodon) sur {instance} —\n{message}\n")
+    if repondre:
+        print(f"↪️  En réponse au message {repondre}")
     if image:
         print(f"🖼️  Image : {image}" + (f" (alt : {alt})" if alt else " (sans description)"))
     if not oui and input("Publier ? [o/N] ").strip().lower() not in ("o", "oui", "y", "yes", "w", "wi"):
@@ -121,6 +129,8 @@ def main(args):
         sys.exit("❌ Aucun jeton")
 
     champs = {"status": message, "visibility": "public"}
+    if repondre:
+        champs["in_reply_to_id"] = repondre
     if image:
         champs["media_ids"] = [envoyer_image(instance, jeton, image, alt)]
     statut = requete(

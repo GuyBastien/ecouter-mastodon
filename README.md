@@ -86,6 +86,8 @@ python3 publier_mastodon.py message.txt --image capture.png --alt "Description d
 
 Il faut un jeton d'accès : sur Mastodon, **Préférences > Développement > Nouvelle application**, cochez seulement `write:statuses` et `write:media`, puis copiez « Votre jeton d'accès ». Le script le demande au moment de publier (il ne s'affiche pas et n'est pas enregistré). Ne mettez jamais ce jeton dans un fichier du dépôt.
 
+Pour faire un fil, ajoutez `--repondre <lien du message>`.
+
 Le script affiche le lien du message publié. On peut ensuite suivre les réponses :
 
 ```sh
