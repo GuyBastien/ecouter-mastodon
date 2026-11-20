@@ -74,3 +74,20 @@ GPL-3.0 — voir [LICENSE](LICENSE).
 ## Auteur
 
 Bastien — [@Guy_Bastien@mastodon.social](https://mastodon.social/@Guy_Bastien) · [GitHub](https://github.com/GuyBastien) · [Portfolio](https://guivenschery.me)
+
+## Publier un message
+
+`publier_mastodon.py` publie un message (et une image si on veut) sur votre compte :
+
+```sh
+python3 publier_mastodon.py message.txt
+python3 publier_mastodon.py message.txt --image capture.png --alt "Description de l'image"
+```
+
+Il faut un jeton d'accès : sur Mastodon, **Préférences > Développement > Nouvelle application**, cochez seulement `write:statuses` et `write:media`, puis copiez « Votre jeton d'accès ». Le script le demande au moment de publier (il ne s'affiche pas et n'est pas enregistré). Ne mettez jamais ce jeton dans un fichier du dépôt.
+
+Le script affiche le lien du message publié. On peut ensuite suivre les réponses :
+
+```sh
+python3 ecouter_mastodon.py https://mastodon.social/@moi/123456789 600
+```
