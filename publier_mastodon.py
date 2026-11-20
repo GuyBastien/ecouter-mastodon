@@ -22,6 +22,7 @@ import getpass
 import json
 import mimetypes
 import os
+import re
 import sys
 import urllib.error
 import urllib.request
@@ -102,12 +103,14 @@ def main(args):
     message = open(source, encoding="utf-8").read().strip() if os.path.isfile(source) else source
     if not message:
         sys.exit("❌ Message vide")
-    if len(message) > LIMITE:
-        print(f"⚠️  {len(message)} caractères : mastodon.social en accepte {LIMITE} (les liens comptent pour 23).")
+    # Mastodon compte chaque lien comme 23 caractères
+    taille = len(re.sub(r"https?://\S+", "x" * 23, message))
+    if taille > LIMITE:
+        print(f"⚠️  {taille} caractères : mastodon.social en accepte {LIMITE}.")
     if image and not os.path.isfile(image):
         sys.exit(f"❌ Image introuvable : {image}")
 
-    print(f"— Message ({len(message)} caractères) sur {instance} —\n{message}\n")
+    print(f"— Message ({taille} caractères pour Mastodon) sur {instance} —\n{message}\n")
     if image:
         print(f"🖼️  Image : {image}" + (f" (alt : {alt})" if alt else " (sans description)"))
     if not oui and input("Publier ? [o/N] ").strip().lower() not in ("o", "oui", "y", "yes", "w", "wi"):
